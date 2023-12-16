@@ -1,6 +1,6 @@
 providers: [openai:gpt-3.5-turbo-16k]
 prompts: [prompt.txt]
-
+ #в этом блоке проверки успешно ли дастается вложенная информация
 tests:
   - description: "История основания бренда N3VERZzz"
     vars:
@@ -8,6 +8,34 @@ tests:
     assert:
       - type: contains
         value: "2020"
+
+  - description: "История основания бренда X (проверка без использование названия)"
+    vars:
+      input: "Когда был основан бренд?"
+    assert:
+      - type: contains
+        value: "2020"
+
+  - description: "Основатель бренда"
+    vars:
+      input: "Кто является основателем бренда N3VERZzz?"
+    assert:
+      - type: contains
+        value: "Азим Волгодонов"
+
+  - description: "Слоган бренда"
+    vars:
+      input: "Каков слоган бренда N3VERZzz?"
+    assert:
+      - type: contains
+        value: "Как раньше, только лучше"
+
+  - description: "Проверка упоминания места основания бренда"
+    vars:
+      input: "Где был основан бренд N3VERZzz?"
+    assert:
+      - type: regex
+        value: "Санкт-Петербург(а|е|у)?"
 
   - description: "Проверка упоминания места основания бренда"
     vars:
@@ -21,4 +49,376 @@ tests:
       input: "Какая ваша философия?"
     assert:
       - type: llm-rubric
-        value: Ответ про философию бренда N3VERZzz"
+        value: Ответ про философию бренда N3VERZzz
+
+  - description: "Проверка на эстетика (тоже самое что и философия, но слова эстетика нет в описании)"
+    vars:
+      input: "Какая ваша эстетика?"
+    assert:
+      - type: llm-rubric
+        value: Ответ про философию/эстетику бренда N3VERZzz
+
+  - description: "Цена продукта Holographic Skirt"
+    vars:
+      input: "Сколько стоит юбка 'Holographic Skirt'?"
+    assert:
+      - type: contains
+        value: "4000"
+
+  - description: "Размеры продукта Holographic Skirt"
+    vars:
+      input: "Какие размеры доступны для юбки 'Holographic Skirt'?"
+    assert:
+      - type: contains-all
+        value: 
+          - "XS"
+          - "L"
+
+  - description: "Цена продукта Binary Code Scarf"
+    vars:
+      input: "Какова цена шарфа 'Binary Code Scarf' от N3VERZzz?"
+    assert:
+      - type: contains
+        value: "2500"
+
+  - description: "Цена продукта Binary Code Scarf"
+    vars:
+      input: "Какова цена шарфа от N3VERZzz?"
+    assert:
+      - type: contains
+        value: "2500"
+
+  - description: "Колличество вещей в ассортименте"
+    vars:
+      input: "Сколько всего сейчас вещей в ассортименте?"
+    assert:
+      - type: contains-any
+        value:
+          - "два"
+          - "2"
+          - "две"
+
+  - description: "Описание продукта Holographic Skirt"
+    vars:
+      input: "Опишите юбку 'Holographic Skirt' от бренда N3VERZzz."
+    assert:
+      - type: llm-rubric
+        value: Описание юбки с голографическим эффектом.
+
+  - description: "Описание продукта Binary Code Scarf"
+    vars:
+      input: "Опишите шарф 'Binary Code Scarf' от бренда N3VERZzz."
+    assert:
+      - type: llm-rubric
+        value: Описание шарфа с бинарным кодовым узором.
+
+  - description: "Проверка на отсутствующие позиции"
+    vars:
+      input: "Есть ли у вас сейчас в ассортименте бриджи?"
+    assert:
+      - type: llm-rubric
+        value: Бридж нет в ассортименте
+
+  - description: "Проверка сроков стандартной доставки"
+    vars:
+      input: "Каковы сроки стандартной доставки?"
+    assert:
+      - type: contains-all
+        value: 
+          - "5"
+          - "7"
+
+  - description: "Проверка стоимости стандартной доставки"
+    vars:
+      input: "Какова стоимость стандартной доставки?"
+    assert:
+      - type: contains
+        value: "500"
+
+  - description: "Проверка условий бесплатной стандартной доставки"
+    vars:
+      input: "Каковы условия бесплатной стандартной доставки?"
+    assert:
+      - type: llm-rubric
+        value: Ответ что доставка бесплатна для заказов свыше 3000р
+
+  - description: "Проверка сроков экспресс-доставки"
+    vars:
+      input: "Каковы сроки экспресс-доставки?"
+    assert:
+      - type: contains-all
+        value: 
+          - "2"
+          - "3"
+
+  - description: "Проверка стоимости экспресс-доставки"
+    vars:
+      input: "Какова стоимость экспресс-доставки?"
+    assert:
+      - type: contains
+        value: "700"
+
+  - description: "Проверка условий бесплатной доставки для заказа выше минимальной суммы"
+    vars:
+      input: "Я сделал заказ на сумму 3500р, будет ли у меня бесплатная стандартная доставка?"
+    assert:
+      - type: llm-rubric
+        value: Положительный ответ
+  - description: "Проверка срока для возврата товара"
+    vars:
+      input: "В течение какого времени я могу вернуть товар?"
+    assert:
+      - type: contains
+        value: "30"
+
+  - description: "Проверка условий состояния товара при возврате"
+    vars:
+      input: "В каком состоянии должен быть товар для возврата?"
+    assert:
+      - type: llm-rubric
+        value: Смысл ответа такой - товар долже быть в неиспользованном состоянии
+
+  - description: "Проверка сроков возврата средств"
+    vars:
+      input: "Как быстро будут возвращены средства после возврата товара?"
+    assert:
+      - type: contains-all
+        value:
+          - "7"
+          - "10"
+
+  - description: "Проверка возврата стоимости доставки"
+    vars:
+      input: "Возвращается ли стоимость доставки при возврате товара?"
+    assert:
+      - type: llm-rubric
+        value: Смысл ответа такой - cтоимость доставки не возвращается, за исключением случаев с дефектным товаром
+
+  - description: "Проверка возврата использованного товара"
+    vars:
+      input: "Могу ли я вернуть товар, если я его уже использовал?"
+    assert:
+      - type: llm-rubric
+        value: Ответ отрицательный
+
+  - description: "Проверка возврата товара после истечения 30 дней"
+    vars:
+      input: "Могу ли я вернуть товар, если прошло более 30 дней с момента получения?"
+    assert:
+      - type: llm-rubric
+        value: Ответ отрицательный
+
+  - description: "Проверка возврата средств на другой способ оплаты"
+    vars:
+      input: "Могу ли я получить возврат средств на другой способ оплаты, а не на тот, с которого производилась покупка?"
+    assert:
+      - type: llm-rubric
+        value: Ответ отрицательный
+  - description: "Проверка условий скидки на первую покупку"
+    vars:
+      input: "Какая скидка предоставляется на первый заказ?"
+    assert:
+      - type: contains
+        value: "10"
+
+  - description: "Проверка длительности скидки на первую покупку"
+    vars:
+      input: "Является ли скидка на первый заказ временной акцией?"
+    assert:
+      - type: llm-rubric
+        value: Ответ положительный
+
+  - description: "Проверка условий комбо-скидки"
+    vars:
+      input: "Какую скидку я получу, если куплю две вещи?"
+    assert:
+      - type: contains
+        value: "20"
+
+  - description: "Проверка длительности комбо-скидки"
+    vars:
+      input: "Доступна ли комбо-скидка в данный момент?"
+    assert:
+      - type: llm-rubric
+        value:  Ответ положительный
+
+  - description: "Проверка комбо-скидки на одну вещь"
+    vars:
+      input: "Получу ли я скидку 20%, если куплю только одну вещь?"
+    assert:
+      - type: llm-rubric
+        value: Ответ отрицательный
+  - description: "Проверка процесса оставления классического отзыва"
+    vars:
+      input: "Как мне оставить отзыв на товар на вашем сайте?"
+    assert:
+      - type: llm-rubric
+        value: Предложение в котором говорится - перейдите на страницу товара и нажмите на кнопку 'Оставить отзыв'
+
+  - description: "Проверка необходимости входа в аккаунт для оставления отзыва"
+    vars:
+      input: "Нужно ли входить в аккаунт для оставления отзыва?"
+    assert:
+      - type: llm-rubric
+        value: Утверждение что надо войти в аккаунт
+
+  - description: "Проверка способа прямой связи с руководством"
+    vars:
+      input: "Как я могу связаться с руководством N3VERZzz напрямую?"
+    assert:
+      - type: regex
+        value: "(E|e)byuxrot@gmail.com"
+
+  - description: "Проверка способа прямой связи с руководством"
+    vars:
+      input: "У меня отличная идея для вашего бреда, как с вами связаться напрямую?"
+    assert:
+      - type: regex
+        value: "(E|e)byuxrot@gmail.com"
+  - description: "Проверка электронной почты для связи с руководством"
+    vars:
+      input: "Как мне написатьруководству?"
+    assert:
+      - type: contains
+        value: "ebyuxrot@gmail.com"
+
+  - description: "Проверка телефонного номера горячей линии поддержки"
+    vars:
+      input: "Какой телефонный номер у горячей линии поддержки N3VERZzz?"
+    assert:
+      - type: contains
+        value: "+1-(800)-123-4567"
+
+  - description: "Проверка наличия канала N3VERZzz на YouTube"
+    vars:
+      input: "Есть ли у N3VERZzz канал на YouTube?"
+    assert:
+      - type:  llm-rubric
+        value: Положительный ответ
+
+  - description: "Проверка наличия социальных сетей"
+    vars:
+      input: "Какие социальные сети у вас есть?"
+    assert:
+      - type: contains
+        value: "YouTube"
+
+  - description: "Проверка наличия аккаунта в Instagram"
+    vars:
+      input: "Есть ли у вас аккаунт в Instagram?"
+    assert:
+      - type: llm-rubric
+        value: В ответе говорится что аккаунта в Instagram нет или нет информации об этом
+
+  - description: "Проверка доступности WhatsApp для связи"
+    vars:
+      input: "Могу ли я связаться с вами через WhatsApp?"
+    assert:
+      - type: llm-rubric
+        value: В ответе говорится что аккаунта в WhatsApp нет или нет информации об этом
+
+  - description: "Проверка наличия аккаунта в Telegram"
+    vars:
+      input: "Есть ли у вас аккаунт в Telegram?"
+    assert:
+      - type: llm-rubric
+        value: Ответ отрицательный 
+
+  - description: "Проверка наличия аккаунта в Facebook"
+    vars:
+      input: "Есть ли у вас аккаунт в Facebook?"
+    assert:
+      - type: llm-rubric
+        value: Ответ отрицательный
+# Более сложные вопросы, которые косвено касаются магазина 
+  - description: "Проверка реакции на запрос о совете по стилю"
+    vars:
+      input: "Какой стиль одежды лучше выбрать для свидания?"
+    assert:
+      - type: llm-rubric
+        value: Совет по выбору стиля одежды из ассортимента N3VERZzz
+
+  - description: "Проверка реакции на запрос о подарке"
+    vars:
+      input: "Что подарить другу, увлекающемуся модой?"
+    assert:
+      - type: llm-rubric
+        value: Предложение купить 'Holographic Skirt' или 'Binary Code Scarf' 
+
+  - description: "Проверка реакции на вопрос о тенденциях моды"
+    vars:
+      input: "Какие тренды в моде сейчас актуальны?"
+    assert:
+      - type: llm-rubric
+        value: Информация о текущих трендах в моде, отраженных в ассортименте N3VERZzz
+
+  - description: "Проверка реакции на запрос о совместимости цветов"
+    vars:
+      input: "Какие цвета лучше всего сочетаются?"
+    assert:
+      - type: llm-rubric
+        value: Советы по сочетанию цветов в одежде, представленной в N3VERZzz
+
+  - description: "Проверка реакции на запрос о подготовке к событию"
+    vars:
+      input: "Как мне подготовиться к корпоративной вечеринке?"
+    assert:
+      - type: llm-rubric
+        value: Рекомендации по выбору одежды для события из ассортимента N3VERZzz
+
+  - description: "Проверка реакции на вопрос о кулинарии"
+    vars:
+      input: "Как приготовить идеальный бисквит?"
+    assert:
+      - type: llm-rubric
+        value: Уточняющий вопрос или напоминание о роли диспетчера
+
+    
+  - description: "Обработка запроса о сочетании товаров"
+    vars:
+      input: "Будет ли хорошо сочетаться юбка 'Holographic Skirt' с обычной белой футболкой?"
+    assert:
+      - type: llm-rubric
+        value: Мнение о сочетании товаров с учетом стиля бренда
+
+  - description: "Вопрос о специальных размерах"
+    vars:
+      input: "Можно ли заказать юбку 'Holographic Skirt' в размере XL?"
+    assert:
+      - type: llm-rubric
+        value: Информация о доступных размерах 
+
+  - description: "Проверка на запрос об экологичности продукции"
+    vars:
+      input: "Из каких материалов сделан шарф 'Binary Code Scarf' и насколько они экологичны?"
+    assert:
+      - type: llm-rubric
+        value: Информация о материалах и экологической устойчивости продукта
+
+  - description: "Запрос о сравнении с конкурентами"
+    vars:
+      input: "В чем преимущества вашей одежды по сравнению с брендом XYZ?"
+    assert:
+      - type: llm-rubric
+        value: Сравнение основывается на особенностях бренда N3VERZzz, избегая негативных высказываний о конкурентах
+
+  - description: "Вопрос о специальных акциях для определенных категорий граждан"
+    vars:
+      input: "Есть ли у вас скидки для студентов или пенсионеров?"
+    assert:
+      - type: llm-rubric
+        value: Информация о специальных акциях с учетом политики магазина
+
+  - description: "Запрос о сотрудничестве с другими брендами"
+    vars:
+      input: "Сотрудничаете ли вы с другими брендами одежды или дизайнерами?"
+    assert:
+      - type: llm-rubric
+        value: Информация о сотрудничестве с учетом политики и позиционирования бренда
+
+  - description: "Обработка запроса об отзывах на товар"
+    vars:
+      input: "Где я могу найти отзывы покупателей на юбку 'Holographic Skirt'?"
+    assert:
+      - type: llm-rubric
+        value: Информация о местах, где можно найти отзывы
