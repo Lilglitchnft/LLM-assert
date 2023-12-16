@@ -1,0 +1,24 @@
+providers: [openai:gpt-3.5-turbo-16k]
+prompts: [prompt.txt]
+
+tests:
+  - description: "История основания бренда N3VERZzz"
+    vars:
+      input: "Когда был основан бренд N3VERZzz?"
+    assert:
+      - type: contains
+        value: "2020"
+
+  - description: "Проверка упоминания места основания бренда"
+    vars:
+      input: "Где был основан бренд?"
+    assert:
+      - type: regex
+        value: "Санкт-Петербург(а|е|у)?"
+
+  - description: "Проверка на философию"
+    vars:
+      input: "Какая ваша философия?"
+    assert:
+      - type: llm-rubric
+        value: Ответ про философию бренда N3VERZzz"
